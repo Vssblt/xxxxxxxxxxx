@@ -29,6 +29,11 @@ func s:Highlight(init, old, new)
 endfunc
 call s:Highlight(1, '', &background)
 call sign_define('debugPC', #{linehl: 'debugPC'})
+
+"lua: 
+vim.highlight.create('debugPointer', { ctermbg = 'darkblue' guibg = 'darkblue' })
+vim.fn.sign_define('vgdb_debug_pointer', {linehl = 'debugPointer', text = '➡' })
+
 ```
 
 

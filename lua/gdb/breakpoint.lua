@@ -111,4 +111,6 @@ function breakpoint:toggle(buf_name, lnum)
   end
 end
 
+-- vim.fn.sign_define('vgdb_debug_pointer', {linehl = 'debugPointer', text = '↪' })
+
 return breakpoint

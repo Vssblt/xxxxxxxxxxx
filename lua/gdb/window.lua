@@ -70,11 +70,9 @@ function window:open_terminal(opts)
   window.stdout_bufnr = window.stdout_bufnr == nil and vim.api.nvim_create_buf(false, true) or window.stdout_bufnr
   window.mi_bufnr = window.mi_bufnr == nil and vim.api.nvim_create_buf(false, true) or window.mi_bufnr
   vim.api.nvim_set_current_buf(window.gdb_bufnr)
-  local stdout_chan_id = vim.fn.jobstart({"cat", "-"}, {
+  window.stdout_chan_id = window.stdout_chan_id == nil and vim.fn.jobstart({"cat", "-"}, {
     pty = true,
     on_stdout = function (_, msg, _)
-      io.write(window.stdout_bufnr .. '\n')
-      io.write(vim.api.nvim_buf_line_count(window.stdout_bufnr) .. '\n')
       for _, line in pairs(msg) do
         vim.fn.appendbufline(window.stdout_bufnr, vim.api.nvim_buf_line_count(window.stdout_bufnr), line)
       end
@@ -83,27 +81,18 @@ function window:open_terminal(opts)
     end,
     on_exit = function (_, _, _)
       window.stdout_pty = nil
+      window.stdout_chan_id = nil
       vim.cmd('bwipeout! ' .. window.stdout_bufnr)
     end
-  })
-  window.stdout_pty = vim.api.nvim_get_chan_info(stdout_chan_id).pty
-  local mi_chan_id = vim.fn.jobstart({"cat", "-"}, {
-    pty = true,
-    on_stdout = function (_, msg, _)
-      io.write("mi_pty\n")
-      for _, line in pairs(msg) do
-        vim.fn.appendbufline(window.stdout_bufnr, vim.api.nvim_buf_line_count(window.stdout_bufnr), line)
-      end
-    end,
-    on_stderr = function (_, _, _)
-    end,
+  }) or window.stdout_chan_id
+  window.stdout_pty = vim.api.nvim_get_chan_info(window.stdout_chan_id).pty
+  window.mi_chan_id = window.mi_chan_id == nil and vim.fn.termopen('/usr/bin/tail -f /dev/null', {
     on_exit = function (_, _, _)
-      window.mi_pty = nil
+      window.mi_chan_id = nil
       vim.cmd('bwipeout! ' .. window.mi_bufnr)
     end
-  })
-  window.mi_pty = vim.api.nvim_get_chan_info(mi_chan_id).pty
-
+  }) or window.mi_chan_id
+  window.mi_pty = vim.api.nvim_get_chan_info(window.mi_chan_id).pty
   local cmd = (opts.gdb_path or "/usr/bin/gdb") .. " " .. (opts.gdb_args or "") .. " --tty " .. window.stdout_pty .. " " .. (opts.app_path or "")
   window.term_chan_id = window.term_chan_id == nil and vim.fn.termopen(cmd, {
     on_exit = function (_, _, _)

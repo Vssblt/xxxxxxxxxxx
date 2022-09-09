@@ -1,5 +1,10 @@
 local breakpoint = {}
 
+function breakpoint:init()
+  vim.highlight.create('debugPointer', { ctermbg = 'darkblue', guibg = 'darkblue' })
+  vim.fn.sign_define('vgdb_debug_pointer', {linehl = 'debugPointer', text = '➡' })
+end
+
 function breakpoint:define_enabled(buf_name, lnum)
   vim.fn.sign_define('vgdb_enabled_' .. buf_name .. ':' .. lnum, { text = '🔴' })
 end
@@ -111,6 +116,22 @@ function breakpoint:toggle(buf_name, lnum)
   end
 end
 
--- vim.fn.sign_define('vgdb_debug_pointer', {linehl = 'debugPointer', text = '↪' })
+function breakpoint:debug_pointer(file_name, lnum)
+  if file_name == nil or lnum == nil then return end
+  vim.cmd('edit ' .. file_name)
+  breakpoint.pointer_id = vim.fn.sign_place(0, 'vgdb', 'vgdb_debug_pointer', file_name, {lnum = lnum})
+  breakpoint.pointer = file_name
+  vim.cmd(tostring(lnum))
+  vim.cmd('normal zz')
+end
+
+function breakpoint:remove_debug_pointer()
+  if breakpoint.pointer and breakpoint.pointer_id then
+    vim.fn.sign_unplace('vgdb', {buffer = breakpoint.pointer, id = breakpoint.pointer_id } )
+    breakpoint.pointer_id = nil
+    breakpoint.pointer = nil
+  end
+end
+
 
 return breakpoint

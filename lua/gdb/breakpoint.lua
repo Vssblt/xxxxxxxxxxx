@@ -118,6 +118,7 @@ end
 
 function breakpoint:debug_pointer(file_name, lnum)
   if file_name == nil or lnum == nil then return end
+  breakpoint:remove_debug_pointer()
   vim.cmd('edit ' .. file_name)
   breakpoint.pointer_id = vim.fn.sign_place(0, 'vgdb', 'vgdb_debug_pointer', file_name, {lnum = lnum})
   breakpoint.pointer = file_name

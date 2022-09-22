@@ -1,8 +1,3 @@
-local log_path = "/home/msun/nvim-gdb.log"
-local log_file = io.open(log_path, "a+")
-io.output(log_file)
-io.write("\nnvim-gdb starting! ------------------ \n")
-
 local window = {}
 
 function window:horizontal_layout(height, pos, pos_type, win_configs)
@@ -40,11 +35,22 @@ function window:create_window(win_cmd, win_conf)
 end
 
 function window:open_terminal(opts)
-  opts = opts or { gdb = "/usr/bin/gdb", gdb_args = "", app_path = "", pos = "bottom", pos_type = "relative" }
-  local size = opts.size or 20
-  local pos_type = opts.pos_type or "absolute"
-  local gdb_win_id
+  opts = opts or {
+      gdb = "/usr/bin/gdb",
+      gdb_args = '-quiet -iex "set pagination off" -iex "set mi-async on" -ex "echo startupdone\n"',
+      app_path = "",
+      pos = "bottom",
+      pos_type = "relative"
+  }
+
+  local gdb = opts.gdb or "/usr/bin/gdb"
+  local gdb_args = opts.gdb_args or ""
+  local app_path = opts.app_path or ""
   local pos = opts.pos or "bottom"
+  local pos_type = opts.pos_type or "absolute"
+
+  local size = opts.size or 20
+  local gdb_win_id
   if pos == "bottom" or pos == "top" then
     gdb_win_id = window.horizontal_layout(window, size, pos, pos_type, {
     list = false,
@@ -104,7 +110,8 @@ function window:open_terminal(opts)
   })
   window.mi_pty = vim.api.nvim_get_chan_info(mi_chan_id).pty
 
-  local cmd = (opts.gdb_path or "/usr/bin/gdb") .. " " .. (opts.gdb_args or "") .. " --tty " .. window.stdout_pty .. " " .. (opts.app_path or "")
+  local cmd = gdb .. " " .. gdb_args .. " -tty " .. window.stdout_pty .. " " .. app_path
+
   window.term_chan_id = window.term_chan_id == nil and vim.fn.termopen(cmd, {
     on_exit = function (_, _, _)
       window.term_chan_id = nil

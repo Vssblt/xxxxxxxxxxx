@@ -14,11 +14,11 @@ function breakpoint:define_disabled(buf_name, lnum)
 end
 
 function breakpoint:place(buf_name, lnum)
-  buf_name = buf_name and buf_name or vim.fn.expand('%:p')
+  buf_name = buf_name or vim.fn.expand('%:p')
   if buf_name == '' then
     return nil
   end
-  lnum = lnum and lnum or vim.fn.line('.')
+  lnum = lnum or vim.fn.line('.')
   local items = vim.fn.sign_getplaced(buf_name, {group = 'lgdb'})
   for _, placed_list in pairs(items) do
     if vim.fn.bufnr(buf_name) ~= placed_list.bufnr then
@@ -36,11 +36,11 @@ function breakpoint:place(buf_name, lnum)
 end
 
 function breakpoint:unplace(buf_name, lnum)
-  buf_name = buf_name and buf_name or vim.fn.expand('%:p')
+  buf_name = buf_name or vim.fn.expand('%:p')
   if buf_name == '' then
     return nil
   end
-  lnum = lnum and lnum or vim.fn.line('.')
+  lnum = lnum or vim.fn.line('.')
   local items = vim.fn.sign_getplaced(buf_name, {group = 'lgdb'})
   for _, placed_list in pairs(items) do
     if vim.fn.bufnr(buf_name) ~= placed_list.bufnr then
@@ -62,11 +62,11 @@ function breakpoint:unplace(buf_name, lnum)
 end
 
 function breakpoint:enable(buf_name, lnum)
-  buf_name = buf_name and buf_name or vim.fn.expand('%:p')
+  buf_name = buf_name or vim.fn.expand('%:p')
   if buf_name == '' then
     return nil
   end
-  lnum = lnum and lnum or vim.fn.line('.')
+  lnum = lnum or vim.fn.line('.')
   local items = vim.fn.sign_getplaced(buf_name, {group = 'lgdb'})
   for _, placed_list in pairs(items) do
     if vim.fn.bufnr(buf_name) ~= placed_list.bufnr then
@@ -86,11 +86,11 @@ function breakpoint:enable(buf_name, lnum)
 end
 
 function breakpoint:disable(buf_name, lnum)
-  buf_name = buf_name and buf_name or vim.fn.expand('%:p')
+  buf_name = buf_name or vim.fn.expand('%:p')
   if buf_name == '' then
     return nil
   end
-  lnum = lnum and lnum or vim.fn.line('.')
+  lnum = lnum or vim.fn.line('.')
   local items = vim.fn.sign_getplaced(buf_name, {group = 'lgdb'})
   for _, placed_list in pairs(items) do
     if vim.fn.bufnr(buf_name) ~= placed_list.bufnr then

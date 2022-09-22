@@ -1,7 +1,36 @@
-local app = vim.g.gdb_app_path
-local gdb = vim.g.gdb_path
-local tty = vim.g.gdb_tty
-local gdb_command = {gdb, "-i=mi", "-quiet", {"-iex", "set pagination off"}, {"-iex", "set mi-async on"}, {"-tty", tty }, app}
+local i = {}
+GdbConfig = {
+    project = {
+      gdb = "/usr/bin/gdb",
+      app = "",
+      args = "",
+    },
+    layout = {
+      {
+        position = "bottom",
+        window = {
+            "console",
+            "gdb"
+        },
+        size = 25
+      },
+      {
+        position = "right",
+        window = {
+            "scope",
+            "breakpoints",
+            "stack"
+        },
+        size = 40
+      }
+    },
+    log = "true",
+    log_path = "/tmp/light-gdb.log",
+  }
 
-require'gdb.layout'
-require'gdb.command'
+function i.setup(obj)
+  GdbConfig = GdbConfig or obj
+  require'gdb.log'.init()
+end
+
+return i
